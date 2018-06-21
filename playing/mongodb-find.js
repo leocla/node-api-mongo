@@ -14,9 +14,10 @@ MongoClient.connect('mongodb://localhost:27017/TodoApp', (err, client)=> {
     const db = client.db('TodoApp');
     
     // MENGHITUNG JUMLAH DATA DALAM DATABASE
+    /// nama collection CASE SENSITIVE... huruf besar dan kecil beda
     db.collection('Todos').find({}).count().then((counter) => {
         console.log(`Hasil perhitungan data sebanyak ${counter}`);
-    }, (err) => {
+    }, (err) => { // akan masuk jika mongoDB server mati
         console.log('Gagal mengambil data dari SERVER... HAHAHA');
     });
 
