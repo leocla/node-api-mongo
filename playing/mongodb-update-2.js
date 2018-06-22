@@ -46,3 +46,7 @@ MongoClient.connect('mongodb://localhost:27017/TodoApp', (err, client)=> {
     client.close(); // untuk keluar jika sudah selesai
 });
 
+
+/**
+ * ORM --- object relational model
+ */
