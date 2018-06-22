@@ -1,31 +1,51 @@
-var mongoose = require('mongoose');
+var express = require('express');
+var bodyParser = require('body-parser');
 
-mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://localhost:27017/TodoAplikasi');
+var {mongoose} = require('./db/mongoose');
+var {Todo} = require('./models/todo'); // get todo.js
+var {User} = require('./models/user'); //get user.js
 
-var SkemaBaru = mongoose.model('DataBaru', {   
-    text : {
-        type: String,
-        required : true,
-        minlength: 1,
-        trim : false // trim false akan membuat spasi tetap ada
-    }, 
-    completed : {
-        type: Boolean,
-        default: false
-    },
-    completedAt : {
-        type: Number,
-        default: null
-    }
+var app = express();
+var port = 3000;
+
+// CONFIGURE THE MIDDLEWARE
+app.use(bodyParser.json());
+
+
+app.get('/', (req, res) => {
+    res.json({
+        data : 'hore'
+    });
 });
 
-var DataHore = new SkemaBaru({
-    text: 23
-});
+/**
+ * CRUD ~~~~~~
+ * C - create
+ * R - read
+ * U - update
+ * D - delete
+ */
 
-DataHore.save().then((hore) => {
-    console.log(JSON.stringify(hore, undefined, 2));
-}, (err) => {
-    console.log('GAGAL BRO>>>> menyimpan gagal~!', err);
+ app.post('/todos', (req, res) => {
+     // cuma ngeprint aja bos
+    var post_hasil = req.body;
+    console.log(JSON.stringify(post_hasil, undefined, 2));
+
+    //memasukan ke dalam mongo db
+    var todo = new Todo({  /// Todo (T besar...) --> sudah dideklarasikan
+        text : req.body.text
+    });
+
+    // simpan ke dalam database
+    todo.save().then((dokumen) => {
+        res.send(dokumen);
+    }, (err) => {
+        res.status(400).send(err);
+        console.log('Gagal menyimpan database', err);
+    });
+ });
+
+
+app.listen(port, () => {
+    console.log(`Server running in port ${port}... ASYIK~!`)
 });
