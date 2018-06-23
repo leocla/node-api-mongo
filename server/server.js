@@ -3,7 +3,7 @@ var bodyParser = require('body-parser');
 
 var {mongoose} = require('./db/mongoose');
 var {Todo} = require('./models/todo'); // get todo.js
-var {User} = require('./models/user'); //get user.js
+var {UserData} = require('./models/user'); //get user.js
 
 var app = express();
 var port = 3000;
@@ -28,8 +28,8 @@ app.get('/', (req, res) => {
 
  app.post('/todos', (req, res) => {
      // cuma ngeprint aja bos
-    var post_hasil = req.body;
-    console.log(JSON.stringify(post_hasil, undefined, 2));
+    //var post_hasil = req.body;
+    //console.log(JSON.stringify(post_hasil, undefined, 2));
 
     //memasukan ke dalam mongo db
     var todo = new Todo({  /// Todo (T besar...) --> sudah dideklarasikan
@@ -45,7 +45,38 @@ app.get('/', (req, res) => {
     });
  });
 
+ app.post('/user', (req, res) => {
+     var pot = req.body;
+     console.log(JSON.stringify(pot, undefined, 2));
+
+     var asik = new UserData({
+         email : req.body.email,
+         password : req.body.password
+     });
+
+     asik.save().then((data) => {
+        res.send(data);
+     }, (err) => {
+         res.status(400).send(err);
+         console.log("gagal menyimpan", err);
+     });
+ });
+
+ // GET DATA
+app.get('/todos', (req, res) => {
+    Todo.find().then((dataDariMongo) => {
+        res.send({
+            dataDariMongo
+        });
+    }, (e) => {
+        res.status(400).send(e);
+    });
+});
 
 app.listen(port, () => {
     console.log(`Server running in port ${port}... ASYIK~!`)
 });
+
+module.exports = {
+    app
+};

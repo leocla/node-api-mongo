@@ -1,13 +1,17 @@
 var mongoose = require('mongoose');
 
 // OBJEK
-var User = mongoose.model('User', {
+var UserData = mongoose.model('User', {
     email : {
         type: String,
-        required: true,
+        required : true,
         trim : true,
         minlength: 2
+    },
+    password : {
+        type : String
+        
     }
 });
 
-module.exports = {User};
+module.exports = {UserData};
