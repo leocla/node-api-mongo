@@ -58,15 +58,16 @@ app.get('/', (req, res) => {
         res.send(data);
      }, (err) => {
          res.status(400).send(err);
-         console.log("gagal menyimpan", err);
+         /////// console.log("gagal menyimpan", err);
      });
  });
 
+ // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  // GET DATA
 app.get('/todos', (req, res) => {
-    Todo.find().then((dataDariMongo) => {
+    Todo.find().then((data_todos) => {
         res.send({
-            dataDariMongo
+            data_todos
         });
     }, (e) => {
         res.status(400).send(e);

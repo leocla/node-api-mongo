@@ -6,13 +6,15 @@ const {app} = require('./../server');
 const {Todo} = require('./../models/todo');
 //const {UserData} = require('./../models/user');
 
-/*
+
 const todos = [{
     text: 'Pertama test todo'
 }, {
     text: 'Kedua test todo'
+}, {
+    text : 'Test bagian ketiga'
 }];
-
+/*
 beforeEach((done) => {
     Todo.remove({}).then(() => {
         return Todo.insertMany(todos);
@@ -22,14 +24,15 @@ beforeEach((done) => {
 */
 
 beforeEach((done) => {
-    Todo.remove({}).then(() => done());
+    Todo.remove({}).then(()=> {
+        return Todo.insertMany(todos);
+    }).then(() => done());
 });
  
 
 describe('TESTING POST /todos', () => {
     it('Harus bisa membuat todo BARU', (donedone) => {
         var text = 'Testing menggunakan todos Hahaha heheh';
-
         request(app)
             .post('/todos')
             .send({ text })
@@ -42,7 +45,7 @@ describe('TESTING POST /todos', () => {
                     return donedone(err);
                 }
 
-                Todo.find().then((todos) => {
+                Todo.find({text}).then((todos) => {
                     expect(todos.length).toBe(1);
                     expect(todos[0].text).toBe(text);
                     donedone();
@@ -61,7 +64,7 @@ describe('TESTING POST /todos', () => {
                     return donebro(err);
                 }
                 Todo.find().then((todos) => {
-                    expect(todos.length).toBe(0);
+                    expect(todos.length).toBe(3);
                     donebro();
                 })
                 .catch((e) => donebro(e));
@@ -70,8 +73,14 @@ describe('TESTING POST /todos', () => {
    });
 });
 
-
-/**
- * TEST GET todos 7-18
- * video 3.16
- */
+describe('GET /todos', ()=> {
+    it('Harus dapat melakukan GET todos', (selesai)=> {
+        request(app)
+            .get('/todos')
+            .expect(200)
+            .expect((res) => {
+                expect(res.body.data_todos.length).toBe(3);
+            })
+            .end(selesai);
+    });
+});
