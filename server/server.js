@@ -41,7 +41,7 @@ app.get('/', (req, res) => {
         res.send(dokumen);
     }, (err) => {
         res.status(400).send(err);
-        console.log('Gagal menyimpan database', err);
+       // console.log('Gagal menyimpan database', err); /// AJA DI print ... g*b*lk~!
     });
  });
 
@@ -70,6 +70,16 @@ app.get('/todos', (req, res) => {
         });
     }, (e) => {
         res.status(400).send(e);
+    });
+});
+
+app.get('/user', (req, res) => {
+    UserData.find().then((data_baru) => {
+        res.send({
+            data_baru
+        });
+    }, (err) => {
+        res.status(400).send(err);
     });
 });
 
