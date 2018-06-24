@@ -4,8 +4,12 @@
   "description": "\"create api using node\"",
   "main": "index.js",
   "scripts": {
+    "start": "node server/server.js", 
     "test": "mocha server/**/*.test.js",
     "test-lihat" : "nodemon --exec \"npm test\""
+  },
+  "engines": {
+    "node" : "8.11.1"
   },
   "author": "",
   "license": "ISC",

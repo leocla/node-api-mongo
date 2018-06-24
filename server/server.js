@@ -7,7 +7,9 @@ var {Todo} = require('./models/todo'); // get todo.js
 var {UserData} = require('./models/user'); //get user.js
 
 var app = express();
-var port = 3000;
+const port = process.env.PORT || 4000; /// FOR HEROKU DEPLOY
+/// PORTnya diganti ke 4000 --- untuk MLAB
+//var port = 3000;
 
 // CONFIGURE THE MIDDLEWARE
 app.use(bodyParser.json());
@@ -106,10 +108,61 @@ app.get('/todos/:id', (request, respond) => {
     });
 });
 
+// DELETE ROUTE
+app.delete('/todos/:id', (req, res) => {
+    // get ID   [✓]
+    /// validate ID    [✓]
+    // remove todo by ID    [✓]
+        // sukses    [✓]
+            // if no doc send to 404   [✓]
+            // if doc, send to 200   [✓]
+        // error
+            // empty with body  [✓]
+    //~~~~
+    var id = req.params.id;
+    if(!ObjectID.isValid(id)){
+        return res.status(404).send();
+    }
+
+    Todo.findByIdAndRemove(id).then((asik) => {
+        if(!asik) {
+            return res.status(404).send();
+        }
+        res.send(asik);  // callback jika berhasil
+    }).catch((e) => {
+        res.status(400).send();
+    }); 
+});
+
+
 app.listen(port, () => {
     console.log(`Server running in port ${port}... ASYIK~!`)
 });
 
+
+
 module.exports = {
     app
 };
+
+/**
+ * "scripts": {
+    "start": "node server/server.js",  /// --- untuk heroku deploy
+    "test": "mocha server/**lwjfoldjw
+    "test-lihat" : "nodemo,mxcwlkmdkl
+
+
+    "engines": {
+    "node" : "8.11.1"
+    },
+ */
+
+
+ /**
+  * ~~~~~~~~~~ DEPLOY TO HEROKU APP ~~~~~~~~~~~
+  * ~~~MONGODB------
+  * $ heroku create ---- menambah aplikasi heroku
+  * ~~~~~~ menambah Addon MONGOLAB
+  * $ 
+  * 
+  */
