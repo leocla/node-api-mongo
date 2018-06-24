@@ -90,14 +90,17 @@ app.get('/user', (req, res) => {
 /// URL parameter
 app.get('/todos/:id', (request, respond) => {
     var id = request.params.id;
+    // TestCase1
     if(!ObjectID.isValid(id)){
         return respond.status(404).send();
     }
-    Todo.findById(id).then((todo) => {
-        if(!todo) {
+    // TestCase2
+    Todo.findById(id).then((todo_ini) => {
+        if(!todo_ini) {
             return respond.status(404).send();
         }
-        respond.send({todo}); // JIKA BERHASIL mendapatkan ID yang sesuai kesini
+        // TestCase3
+        respond.send({todo_ini}); // JIKA BERHASIL mendapatkan ID yang sesuai kesini
     }).catch((e) => {
         res.status(400).send(); // INVALID REQuest
     });
