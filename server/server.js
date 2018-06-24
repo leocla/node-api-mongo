@@ -1,5 +1,6 @@
 var express = require('express');
 var bodyParser = require('body-parser');
+var {ObjectID} = require('mongodb');
 
 var {mongoose} = require('./db/mongoose');
 var {Todo} = require('./models/todo'); // get todo.js
@@ -81,6 +82,24 @@ app.get('/user', (req, res) => {
         });
     }, (err) => {
         res.status(400).send(err);
+    });
+});
+
+
+// GET /todos/12345555553
+/// URL parameter
+app.get('/todos/:id', (request, respond) => {
+    var id = request.params.id;
+    if(!ObjectID.isValid(id)){
+        return respond.status(404).send();
+    }
+    Todo.findById(id).then((todo) => {
+        if(!todo) {
+            return respond.status(404).send();
+        }
+        respond.send({todo}); // JIKA BERHASIL mendapatkan ID yang sesuai kesini
+    }).catch((e) => {
+        res.status(400).send(); // INVALID REQuest
     });
 });
 

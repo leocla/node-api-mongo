@@ -9,10 +9,6 @@ if(!ObjectId.isValid(id)){
 }
 
 
-/**
- * -------------------------------///
- * SAMPAI VIDEO 10.36  --- 7.19
- */
 
 // jika id tidak sesuai,, maka muncul []
 // tapi jika id.length tidak sesuai maka akan error  (INVALID ID)
