@@ -1,3 +1,53 @@
+//``````ini yg salah
+
+// var env = process.env.NODE_ENV || 'development';
+// console.log('env ******', env);
+
+// if (env === 'development') {   // untuk LOKAL
+//     process.env.PORT = 4000;
+//     process.env.MONGOBD_URI = 'mongodb://localhost:27017/TodoAplikasi'; /// G*MBL*NK ------> mongobd?.... sing bener MONGODB
+// } else if (env === 'test') {
+//     process.env.PORT = 4000;
+//     process.env.MONGOBD_URI = 'mongodb://localhost:27017/TodoAplikasiTesting';
+// } 
+
+var env = process.env.NODE_ENV || 'development';
+console.log('env ******', env);
+
+if(env === 'development'){
+    process.env.PORT = 4000;
+    process.env.MONGODB_URI = ('mongodb://localhost:27017/TodoAplikasi') || ('mongodb://tono:tono1234@ds117431.mlab.com:17431/node-api-mongodb');
+} else if(env === 'test'){
+    process.env.PORT = 4000;
+    process.env.MONGODB_URI = 'mongodb://localhost:27017/TodoAplikasiTesting ';
+}
+
+// var env = process.env.NODE_ENV || 'development';
+// console.log('env ******', env);
+
+// if (env === 'development') {
+//   process.env.PORT = 4000;
+//   process.env.MONGODB_URI = 'mongodb://localhost:27017/TodoApp';
+// } else if (env === 'test') {
+//   process.env.PORT = 4000;
+//   process.env.MONGODB_URI = 'mongodb://localhost:27017/TodoAppTest';
+// }
+
+// var env = process.env.NODE_ENV || 'development';
+// console.log('env ******', env);
+
+// if (env === 'development') {
+//   process.env.PORT = 4000;
+//   process.env.MONGODB_URI = 'mongodb://localhost:27017/TodoAplikasi';
+// } else if (env === 'test') {
+//   process.env.PORT = 4000;
+//   process.env.MONGODB_URI = 'mongodb://localhost:27017/TodoAplikasiTesting';
+// }
+
+
+
+/// 09.09
+
 const _lo = require('lodash');
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -8,7 +58,7 @@ var {Todo} = require('./models/todo'); // get todo.js
 var {UserData} = require('./models/user'); //get user.js
 
 var app = express();
-const port = process.env.PORT || 4000; /// FOR HEROKU DEPLOY
+const port = process.env.PORT; /// FOR HEROKU DEPLOY
 /// PORTnya diganti ke 4000 --- untuk MLAB
 //var port = 3000;
 
@@ -18,7 +68,8 @@ app.use(bodyParser.json());
 
 app.get('/', (req, res) => {
     res.json({
-        data : 'hore'
+        data : 'no data here',
+        msg : "congratulations"
     });
 });
 
