@@ -128,7 +128,7 @@ app.delete('/todos/:id', (req, res) => {
         if(!asik) {
             return res.status(404).send();
         }
-        res.send(asik);  // callback jika berhasil
+        res.send({asik});  // callback jika berhasil
     }).catch((e) => {
         res.status(400).send();
     }); 
