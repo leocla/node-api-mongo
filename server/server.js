@@ -139,10 +139,11 @@ app.delete('/todos/:id', (req, res) => {
 /**
  * UPDATE ROUTE
  * PATCH
+ * ~~~ rung mudeng eeee
  */
 app.patch('/todos/:id', (req, res) => {
     var id = req.params.id;
-    var body = _lo.pick(req.body, ['text', 'completed']);
+    var body = _lo.pick(req.body, ['text', 'completed']); // nggo lodash kie
 
     if(!ObjectID.isValid(id)){
         return res.status(404).send();

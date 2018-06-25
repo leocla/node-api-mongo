@@ -8,15 +8,27 @@ const {Todo} = require('./../models/todo');
 //const {UserData} = require('./../models/user');
 
 
+// const todos = [{
+//     _id: new ObjectID(),
+//     text: 'Pertama test todo'
+// }, {
+//     _id: new ObjectID(),
+//     text: 'Kedua test todo',
+//     completed: true,
+//     completedAt : 333
+// }, {
+//     _id: new ObjectID(),
+//     text : 'Test bagian ketiga'
+// }];
+
 const todos = [{
     _id: new ObjectID(),
     text: 'Pertama test todo'
 }, {
     _id: new ObjectID(),
-    text: 'Kedua test todo'
-}, {
-    _id: new ObjectID(),
-    text : 'Test bagian ketiga'
+    text: 'Kedua test todo',
+    completed: true,
+    completedAt : 33323
 }];
 /*
 beforeEach((done) => {
@@ -68,7 +80,7 @@ describe('TESTING POST /todos', () => {
                     return donebro(err);
                 }
                 Todo.find().then((todos) => {
-                    expect(todos.length).toBe(3);
+                    expect(todos.length).toBe(2);
                     donebro();
                 })
                 .catch((e) => donebro(e));
@@ -83,7 +95,7 @@ describe('GET /todos', ()=> {
             .get('/todos')
             .expect(200)
             .expect((res) => {
-                expect(res.body.data_todos.length).toBe(3);
+                expect(res.body.data_todos.length).toBe(2);
             })
             .end(selesai);
     });
@@ -165,6 +177,53 @@ describe('DELETE /todos/:id', () => {
         request(app)
             .delete('/todos/123dsa')
             .expect(404)
+            .end(done);
+    });
+});
+
+describe('PATCH /todos/:id', () => {
+    it('harus update todo', (done) => {
+        // pastikan id dari first item
+        // update text, set completed to true
+        // 200
+        // text is changed, completed true, completedAt is a number toBeA
+        var hexId = todos[0]._id.toHexString();
+        var text = 'Ini harusnya jadi new text';
+        request(app)
+            .patch(`/todos/${hexId}`)
+            .send({
+                completed: true,
+                text
+            })
+            .expect(200)
+            .expect((res) => {
+                expect(res.body.todo.text).toBe(text);
+                expect(res.body.todo.completed).toBe(true);
+                expect(res.body.todo.completedAt).toBeA('number');
+            })
+            .end(done);
+    });
+
+    it('harus clear completedAt ketika todo tidak selesai', (done) => {
+        // grad id of second todo item
+        // update text, set completed to false
+        // 200
+        // text is changed, completed false, completedAt is null, .toNotExist
+        var hehe = todos[1]._id.toHexString();
+        var text = 'INI HARUS jadi NEW TEXT!!!';
+
+        request(app)
+            .patch(`/todos/${hehe}`)
+            .send({
+                completed: false,
+                text
+            })
+            .expect(200)
+            .expect((res) => {
+                expect(res.body.todo.text).toBe(text);
+                expect(res.body.todo.completed).toBe(false);
+                expect(res.body.todo.completedAt).toNotExist();
+            })
             .end(done);
     });
 });
