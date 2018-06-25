@@ -15,9 +15,9 @@ var env = process.env.NODE_ENV || 'development';
 console.log('env ******', env);
 
 if(env === 'development'){
-    process.env.PORT = 4000 || process.env.PORT;
-    //process.env.MONGODB_URI = ('mongodb://localhost:27017/TodoAplikasi') || ('mongodb://tono:tono1234@ds117431.mlab.com:17431/node-api-mongodb');
-    process.env.MONGODB_URI = 'mongodb://tono:tono1234@ds117431.mlab.com:17431/node-api-mongodb';
+    process.env.PORT = 4000;
+    process.env.MONGODB_URI = 'mongodb://localhost:27017/TodoAplikasi';
+    //process.env.MONGODB_URI = 'mongodb://tono:tono1234@ds117431.mlab.com:17431/node-api-mongodb';
 } else if(env === 'test'){
     process.env.PORT = 4000;
     process.env.MONGODB_URI = 'mongodb://localhost:27017/TodoAplikasiTesting ';
@@ -59,7 +59,7 @@ var {Todo} = require('./models/todo'); // get todo.js
 var {UserData} = require('./models/user'); //get user.js
 
 var app = express();
-const port = process.env.PORT; /// FOR HEROKU DEPLOY
+const port = process.env.PORT || 4000; /// FOR HEROKU DEPLOY
 /// PORTnya diganti ke 4000 --- untuk MLAB
 //var port = 3000;
 

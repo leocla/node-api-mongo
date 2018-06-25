@@ -6,7 +6,7 @@ mongoose.Promise = global.Promise;
  */
 
 //mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/TodoAplikasi');
-mongoose.connect(process.env.MONGODB_URI);
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://tono:tono1234@ds117431.mlab.com:17431/node-api-mongodb');
 
 /**
  * MENGAMBIL DATABASE dari MLAB
