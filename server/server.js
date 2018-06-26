@@ -51,7 +51,7 @@ app.get('/', (req, res) => {
     });
  });
 
- app.post('/user', (req, res) => {
+ app.post('/userx', (req, res) => {
      var pot = req.body;
      console.log(JSON.stringify(pot, undefined, 2));
 
@@ -80,7 +80,7 @@ app.get('/todos', (req, res) => {
     });
 });
 
-app.get('/user', (req, res) => {
+app.get('/userx', (req, res) => {
     UserData.find().then((data_baru) => {
         res.send({
             data_baru
@@ -171,6 +171,51 @@ app.patch('/todos/:id', (req, res) => {
 });
 
 
+/***
+ * ~~~~~~~~~~~~~~~~~~~~~~~
+ * MULAI PADA SECTION 8
+ * ~~~~~~~~~~~~~~~~~~~~~~~ user data // tugas membuat USER~!
+ */
+
+ // POST /user
+app.post('/user', (req, res) => {
+    // ~~~ cara baru with lodash
+    var body = _lo.pick(req.body, ["email", "password"]);
+    var dataUser = new UserData(body);
+
+    dataUser.save().then(() => {
+        //res.send(hasil);
+        // call method token
+        return dataUser.generateAuthToken();
+    }).then((token) => {
+        res.header('x-auth', token).send(dataUser);
+    }).catch((er) => {
+        res.send(er).status(400);
+    });
+
+    // ~~~ cara lama
+    /*
+    var data = new UserData({
+        email: req.body.email,
+        password: req.body.password
+    });
+    data.save().then((hasil) => {
+        res.send(hasil);
+    }, (e) => {
+        res.status(404).send(e);
+    }); */
+});
+
+ // GET /user
+app.get('/user', (req, res) => {
+    UserData.find().then((new_data) =>{
+        res.send({
+            new_data
+        });
+    }, (e) => {
+        res.status(404).send(e);
+    });
+});
 
 
 app.listen(port, () => {

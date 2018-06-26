@@ -1,11 +1,9 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 
-const jwt = require('jsonwebtoken');
-const _ = require('lodash');
 
-// skema constructor function
-var UserSkema = new mongoose.Schema({
+// OBJEK
+var UserData = mongoose.model('User', {
     email : {
         type: String,
         required : true,
@@ -33,30 +31,6 @@ var UserSkema = new mongoose.Schema({
         }
     }]
 });
-
-// EMBUH iki... ~~~~ untuk menyembunyikan PASSWORD + token
-UserSkema.methods.toJSON = function() {
-    var UserData = this;
-    var userObjek = UserData.toObject();
-
-    return _.pick(userObjek, ['_id', 'email']);
-};
-
-// tidak bisa pake arrow function
-UserSkema.methods.generateAuthToken = function (){
-    var dataUser = this;
-    var access = 'auth';
-    var token = jwt.sign({_id: dataUser._id.toHexString(), access}, 'abc123').toString();
-
-    // data.tokens.push({access, token}); // FAILED
-    dataUser.tokens = dataUser.tokens.concat([{access, token}]); // NEW UPDATE METHOD
-
-    return dataUser.save().then(() => {
-        return token;
-    });
-};
-
-var UserData = mongoose.model('User', UserSkema);
 
 module.exports = {UserData};
 
