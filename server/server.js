@@ -4,9 +4,11 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const {ObjectID} = require('mongodb');
 
+// IMPORT
 var {mongoose} = require('./db/mongoose');
 var {Todo} = require('./models/todo'); // get todo.js
 var {UserData} = require('./models/user'); //get user.js
+const {otentikasi} = require('./middleware/otentikasi');
 
 var app = express();
 const port = process.env.PORT || 4000; /// FOR HEROKU DEPLOY
@@ -215,6 +217,28 @@ app.get('/user', (req, res) => {
     }, (e) => {
         res.status(404).send(e);
     });
+});
+
+
+
+// private route
+// GET request bisa dilakukan hanya dengan menggunakan token header
+app.get('/user/me', otentikasi, (req, res) => {
+    res.send(req.user);
+    
+    /*
+    var token = req.header('x-auth');
+
+    //model method
+    UserData.findByToken(token).then((user) => {
+        if(!user){ // jika tidak ada user
+            //res.status(401).send();   
+            return Promise.reject();
+        }
+        res.send(user); 
+    }).catch((err) => {
+        res.status(401).send(); // unauthorized
+    }); */
 });
 
 

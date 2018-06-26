@@ -56,7 +56,29 @@ UserSkema.methods.generateAuthToken = function (){
     });
 };
 
-var UserData = mongoose.model('User', UserSkema);
+// generate token method
+UserSkema.statics.findByToken = function(token){
+    var User = this;
+    var decoded; // undefinde variable
+
+    try {
+        decoded = jwt.verify(token, 'abc123');
+    } catch (e) {
+        // return new Promise((terima, tolak) => {
+        //     tolak();
+        // });
+        return Promise.reject();
+    }
+
+    //success case
+    return User.findOne({
+        '_id' : decoded._id,
+        'tokens.token': token,
+        'tokens.access' : 'auth'
+    });
+};
+
+var UserData = mongoose.model('User', UserSkema); // di dalam kurung memanggil data dari UserSkema di atas
 
 module.exports = {UserData};
 
