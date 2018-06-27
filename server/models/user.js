@@ -3,6 +3,7 @@ const validator = require('validator');
 
 const jwt = require('jsonwebtoken');
 const _ = require('lodash');
+const bcrypt = require('bcryptjs');
 
 // skema constructor function
 var UserSkema = new mongoose.Schema({
@@ -77,6 +78,24 @@ UserSkema.statics.findByToken = function(token){
         'tokens.access' : 'auth'
     });
 };
+
+
+//hashing password
+UserSkema.pre('save', function(next){
+    var userHehe = this;
+    //var password = _.pick()
+    if (userHehe.isModified('password')){
+        bcrypt.genSalt(10, (err, salt) => {
+            bcrypt.hash(userHehe.password, salt, (err, hash) => {
+                //console.log(hash);
+                userHehe.password = hash; // overwrite
+                next();
+            });
+        });
+    } else {
+        next();
+    }
+});
 
 var UserData = mongoose.model('User', UserSkema); // di dalam kurung memanggil data dari UserSkema di atas
 
