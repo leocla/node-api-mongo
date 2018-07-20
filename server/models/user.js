@@ -1,115 +1,133 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
-
 const jwt = require('jsonwebtoken');
 const _ = require('lodash');
 const bcrypt = require('bcryptjs');
 
-// skema constructor function
-var UserSkema = new mongoose.Schema({
-    email : {
-        type: String,
-        required : true,
-        trim : true,
-        minlength: 1,
-        unique: true,
-        validate: {
-            validator: validator.isEmail,
-            message: '{VALUE} is not valid email'
-        }
+var UserSchema = new mongoose.Schema({
+  email: {
+    type: String,
+    required: true,
+    trim: true,
+    minlength: 1,
+    unique: true,
+    // validate: {
+    //   validator: validator.isEmail,
+    //   message: '{VALUE} is not a valid email'
+    // }
+    validate : {
+      validator : (value) => {
+        return validator.isEmail(value);
+      },
+      message : '{VALUE} is not a valid email'
+    }
+  },
+  password: {
+    type: String,
+    require: true,
+    minlength: 6
+  },
+  tokens: [{
+    access: {
+      type: String,
+      required: true
     },
-    password : {
-        type : String,
-        required : true,
-        minlength: 7
-    },
-    tokens: [{
-        access : {
-            type: String,
-            required: true
-        },
-        token: {
-            type: String,
-            required: true
-        }
-    }]
+    token: {
+      type: String,
+      required: true
+    }
+  }]
 });
 
-// EMBUH iki... ~~~~ untuk menyembunyikan PASSWORD + token
-UserSkema.methods.toJSON = function() {
-    var UserData = this;
-    var userObjek = UserData.toObject();
+UserSchema.methods.toJSON = function () {
+  var user = this;
+  var userObject = user.toObject();
 
-    return _.pick(userObjek, ['_id', 'email']);
+  return _.pick(userObject, ['_id', 'email']);
 };
 
-// tidak bisa pake arrow function
-UserSkema.methods.generateAuthToken = function (){
-    var dataUser = this;
-    var access = 'auth';
-    var token = jwt.sign({_id: dataUser._id.toHexString(), access}, 'abc123').toString();
+UserSchema.methods.generateAuthToken = function () {
+  var user = this;
+  var access = 'auth';
+  var token = jwt.sign({_id: user._id.toHexString(), access}, process.env.JWT_SECRET).toString();
 
-    // data.tokens.push({access, token}); // FAILED
-    dataUser.tokens = dataUser.tokens.concat([{access, token}]); // NEW UPDATE METHOD
+  user.tokens.push({access, token});
 
-    return dataUser.save().then(() => {
-        return token;
-    });
+  return user.save().then(() => {
+    return token;
+  });
 };
 
-// generate token method
-UserSkema.statics.findByToken = function(token){
-    var User = this;
-    var decoded; // undefinde variable
+// logout token
+// POSTMAN TESTING 
+// sign up dulu (post) -- login (post) -- logout (post)
 
-    try {
-        decoded = jwt.verify(token, 'abc123');
-    } catch (e) {
-        // return new Promise((terima, tolak) => {
-        //     tolak();
-        // });
-        return Promise.reject();
+// saat SIGN UP maupun LOGIN  --> generate auto token  -- hanya butuh email dan password
+// saat (LOGOUT) delete ... maka token akan hilang
+UserSchema.methods.removeToken = function (token) {
+  var user = this;
+
+  return user.update({
+    $pull : {
+      tokens: { token }
+    }
+  });
+  ///$pull 
+};
+
+UserSchema.statics.findByToken = function (token) {
+  var User = this;
+  var decoded;
+
+  try {
+    decoded = jwt.verify(token, process.env.JWT_SECRET);
+  } catch (e) {
+    return Promise.reject();
+  }
+
+  return User.findOne({
+    '_id': decoded._id,
+    'tokens.token': token,
+    'tokens.access': 'auth'
+  });
+};
+
+UserSchema.statics.findByCredentials = function (email, password) {
+  var User = this;
+
+  return User.findOne({email}).then((user) => {
+    if (!user) {
+      return Promise.reject();
     }
 
-    //success case
-    return User.findOne({
-        '_id' : decoded._id,
-        'tokens.token': token,
-        'tokens.access' : 'auth'
+    return new Promise((resolve, reject) => {
+      // Use bcrypt.compare to compare password and user.password
+      bcrypt.compare(password, user.password, (err, res) => {
+        if (res) {
+          resolve(user);
+        } else {
+          reject();
+        }
+      });
     });
+  });
 };
 
+UserSchema.pre('save', function (next) {
+  var user = this;
 
-//hashing password
-UserSkema.pre('save', function(next){
-    var userHehe = this;
-    //var password = _.pick()
-    if (userHehe.isModified('password')){
-        bcrypt.genSalt(10, (err, salt) => {
-            bcrypt.hash(userHehe.password, salt, (err, hash) => {
-                //console.log(hash);
-                userHehe.password = hash; // overwrite
-                next();
-            });
-        });
-    } else {
+  if (user.isModified('password')) {
+    bcrypt.genSalt(10, (err, salt) => {
+      bcrypt.hash(user.password, salt, (err, hash) => {
+        user.password = hash;
         next();
-    }
+      });
+    });
+  } else {
+    next();
+  }
 });
 
-var UserData = mongoose.model('User', UserSkema); // di dalam kurung memanggil data dari UserSkema di atas
+var User = mongoose.model('User', UserSchema);
 
-module.exports = {UserData};
-
-
-
-/**
- * ~~~~~~~~~~  // akan belajar
- * 1. email + password hashing ---- kriptografi pass
- * 2. token
- * 3. access auth
- * ~~~~~~~~~~
- * install validator --- misalnya digunakan untuk cek email yang valid
- * ~~~~~~~~~ $ npm i validator --save
- * perintah --save digunakan untuk update file package.json
- */
+module.exports = {User}

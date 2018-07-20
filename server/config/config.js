@@ -1,25 +1,51 @@
 var env = process.env.NODE_ENV || 'development';
-console.log('env ******', env);
 
-if(env === 'development'){
-    process.env.PORT = 4000;
-    process.env.MONGODB_URI = 'mongodb://localhost:27017/TodoAplikasi';
-    //process.env.MONGODB_URI = 'mongodb://tono:tono1234@ds117431.mlab.com:17431/node-api-mongodb';
-} else if(env === 'test'){
-    process.env.PORT = 4000;
-    process.env.MONGODB_URI = 'mongodb://localhost:27017/TodoAplikasiTesting';
-}
+/**
+ * tambahan 
+ * UPDATE CONFIG
+ * adding to .gitignore --- harusnya  
+ */
 
-//``````INI YANG SALAH
+ if (env === 'development' || env === 'test'){
+    // get from file config.json
+    var config = require('./config.json');
+    console.log(JSON.stringify(config, undefined,2));
+    var envKonfig = config[env];
 
-// var env = process.env.NODE_ENV || 'development';
-// console.log('env ******', env);
+    console.log(Object.keys(envKonfig));
+    Object.keys(envKonfig).forEach((key) => {
+      process.env[key] = envKonfig[key];
+      console.log(process.env[key]);
+    })
+ }
 
-// if (env === 'development') {   // untuk LOKAL
-//     process.env.PORT = 4000;
-//     process.env.MONGOBD_URI = 'mongodb://localhost:27017/TodoAplikasi'; /// G*MBL*NK ------> mongobd?.... sing bener MONGODB
+
+ /**
+  * yang lama ini
+  */
+// if (env === 'development') {
+//   process.env.PORT = 4000;
+//   process.env.MONGODB_URI = 'mongodb://localhost:27017/TodoApp';
 // } else if (env === 'test') {
-//     process.env.PORT = 4000;
-//     process.env.MONGOBD_URI = 'mongodb://localhost:27017/TodoAplikasiTesting';
-// } 
+//   process.env.PORT = 4000;
+//   process.env.MONGODB_URI = 'mongodb://localhost:27017/TodoAppTest';
+// }
 
+/**
+ * manage lokal environment
+ * 
+ */
+
+
+ /**
+  * KONFIGURASI PADA HEROKU
+  * ~~~~~~~~~~~~~~~~~~~~~~~
+  * $ heroku config
+  * $ heroku config:set NAME=Tono
+  * $ heroku config 
+  * $ heroku config:get NAME
+  * $ heroku config:unset NAME
+  * 
+  * ~~~~~~~~~~~~~~~~~~~~~~
+  * $ heroku config:get MONGODB_URI
+  */
